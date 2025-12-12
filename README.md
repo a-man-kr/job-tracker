@@ -1,6 +1,13 @@
-# React + TypeScript + Vite
+# LinkedIn Job Application Tracker
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern job application tracking system built with React, TypeScript, and Supabase.
+
+## Features
+- 🔐 User authentication with Supabase
+- 💾 Cloud storage for job applications
+- 🤖 AI-powered job detail extraction
+- 📱 Mobile-responsive design
+- 🔄 Real-time sync across devices
 
 Currently, two official plugins are available:
 
