@@ -1,0 +1,213 @@
+# Implementation Plan
+
+- [x] 1. Set up project structure and core configuration
+  - Initialize Vite + React + TypeScript project
+  - Configure Tailwind CSS
+  - Set up Vitest and fast-check for testing
+  - Install and configure Zod for schema validation
+  - Create .env.local template with VITE_GEMINI_API_KEY placeholder
+  - Create directory structure: components/, services/, hooks/, types/, utils/
+  - _Requirements: 12.1_
+
+- [x] 2. Define TypeScript types and data models
+  - [x] 2.1 Create type definitions for all data models
+    - Define ApplicationStatus and ReferralStatus types
+    - Define ReferralContact interface
+    - Define JobPosting interface
+    - Define AppState and AppAction types
+    - _Requirements: 3.2, 4.1, 5.1, 5.2_
+
+- [x] 3. Implement Storage Service
+  - [x] 3.1 Create StorageService with CRUD operations
+    - Implement saveJob, getJob, getAllJobs, updateJob, deleteJob methods
+    - Implement isAvailable check for localStorage
+    - Add unique ID generation using crypto.randomUUID()
+    - _Requirements: 3.1, 3.3, 8.1, 8.2, 8.3_
+  - [x] 3.2 Write property test for storage round trip
+    - **Property 1: Storage Round Trip**
+    - **Validates: Requirements 3.1, 3.2, 3.4, 5.2, 5.4, 8.2**
+  - [x] 3.3 Write property test for unique identifiers
+    - **Property 2: Unique Job Identifiers**
+    - **Validates: Requirements 3.3**
+
+- [x] 4. Implement CSV Export Service
+  - [x] 4.1 Create ExportService with CSV generation
+    - Implement generateCSV method with proper column order
+    - Implement RFC 4180 compliant escaping for special characters
+    - Implement downloadCSV method with proper filename format
+    - Format multiple referral contacts as "Name [Method]" joined by semicolons
+    - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5, 7.6_
+  - [x] 4.2 Write property tests for CSV export
+    - **Property 8: CSV Completeness**
+    - **Property 9: CSV Column Order**
+    - **Property 10: CSV Special Character Escaping**
+    - **Property 11: CSV Filename Format**
+    - **Validates: Requirements 7.1, 7.2, 7.4, 7.5, 7.6**
+
+- [x] 5. Implement Gemini AI Service
+  - [x] 5.1 Create AIService for job extraction and message generation
+    - Implement extractJobDetails method with structured JSON response
+    - Use Zod schema to validate and parse AI responses
+    - Implement generateReferralMessage method
+    - Add error handling for network failures and timeouts
+    - Return null fields when extraction confidence is low or validation fails
+    - _Requirements: 1.1, 1.4, 1.6, 1.7, 2.1_
+  - [x] 5.2 Write property tests for AI service contracts
+    - **Property 16: Extraction Returns Structured Data**
+    - **Property 17: Referral Message Contains Job Details**
+    - **Validates: Requirements 1.1, 1.4, 2.1**
+
+- [x] 6. Implement filter and search utilities
+  - [x] 6.1 Create filter functions for job list
+    - Implement searchFilter for job title and company name (case-insensitive)
+    - Implement statusFilter for ApplicationStatus
+    - Implement sortByDateAdded for descending order
+    - _Requirements: 6.4, 10.1, 10.2, 10.4_
+  - [ ]* 6.2 Write property tests for filter functions
+    - **Property 7: Job List Sorting**
+    - **Property 13: Search Filter Correctness**
+    - **Property 14: Status Filter Correctness**
+    - **Property 15: Clear Filter Returns All**
+    - **Validates: Requirements 6.4, 10.1, 10.2, 6.1, 10.4**
+
+- [x] 7. Checkpoint - Ensure all tests pass
+  - Ensure all tests pass, ask the user if questions arise.
+
+- [x] 8. Implement App Context and State Management
+  - [x] 8.1 Create AppContext with reducer
+    - Implement state reducer for all AppAction types
+    - Create context provider with storage integration
+    - Implement auto-save on state changes
+    - Handle status change to "Applied" by setting dateApplied
+    - Update lastUpdated timestamp on any job modification
+    - _Requirements: 4.2, 4.3, 4.4, 8.1_
+  - [ ]* 8.2 Write property tests for status updates
+    - **Property 3: Status Update Persistence with Timestamp**
+    - **Property 4: Date Applied Auto-Set**
+    - **Validates: Requirements 4.2, 4.3, 4.4**
+
+- [x] 9. Implement custom hooks
+  - [x] 9.1 Create useJobs hook
+    - Expose filtered and sorted job list
+    - Expose CRUD operations
+    - Handle loading and error states
+    - _Requirements: 6.1, 6.4, 10.1, 10.2, 10.4_
+  - [x] 9.2 Create useKeyboardShortcuts hook
+    - Implement Shift+N for opening add form (when no input focused)
+    - Implement Esc for closing modal
+    - Implement Cmd+Enter (Mac) / Ctrl+Enter (Windows) for saving
+    - _Requirements: 11.1, 11.2, 11.3_
+
+- [x] 10. Implement referral contact management
+  - [x] 10.1 Create contact management functions
+    - Implement addContact with default "Not Contacted" status
+    - Implement updateContactStatus
+    - Implement removeContact
+    - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5_
+  - [ ]* 10.2 Write property tests for contact management
+    - **Property 5: New Contact Default Status**
+    - **Property 6: Multiple Contacts Preservation**
+    - **Validates: Requirements 5.3, 5.1**
+
+- [x] 11. Checkpoint - Ensure all tests pass
+  - Ensure all tests pass, ask the user if questions arise.
+
+- [x] 12. Build UI Components - Layout and Navigation
+  - [x] 12.1 Create App shell and Header component
+    - Implement responsive layout with Tailwind
+    - Add SearchBar component with debounced input
+    - Add FilterDropdown for status filtering
+    - Add ExportButton component
+    - _Requirements: 6.1, 10.1, 10.2, 12.1, 12.5_
+
+- [x] 13. Build UI Components - Job List
+  - [x] 13.1 Create JobList and JobCard components
+    - Display job title, company, status badge, and date added
+    - Implement color-coded status badges
+    - Handle click to select job
+    - Sort by date added (newest first)
+    - _Requirements: 6.2, 6.3, 6.4, 12.2_
+
+- [x] 14. Build UI Components - Job Detail View
+  - [x] 14.1 Create JobDetail component
+    - Display all job fields (title, company, location, description, URL)
+    - Display Date Added and Date Applied timestamps
+    - Add StatusSelector dropdown with immediate persistence
+    - Add NotesSection with auto-save
+    - _Requirements: 4.1, 4.5, 6.3, 12.1_
+  - [x] 14.2 Create ReferralMessage component
+    - Display editable referral message
+    - Add copy-to-clipboard button
+    - _Requirements: 2.2, 2.3_
+  - [x] 14.3 Create ReferralContacts component
+    - Display list of contacts with status badges
+    - Add form to add new contact
+    - Add status update dropdown for each contact
+    - _Requirements: 5.1, 5.4, 5.5_
+
+- [x] 15. Build UI Components - Add Job Modal
+  - [x] 15.1 Create AddJobModal component
+    - Large text area for pasting job posting
+    - Extract button with loading indicator
+    - Editable fields for extracted data
+    - Optional LinkedIn URL input
+    - Save and Cancel buttons
+    - _Requirements: 1.1, 1.2, 1.3, 1.5, 1.7, 12.3_
+
+- [x] 16. Build UI Components - Delete Confirmation
+  - [x] 16.1 Create DeleteConfirmation dialog
+    - Confirmation prompt before deletion
+    - Delete and Cancel buttons
+    - _Requirements: 9.1, 9.2, 9.3_
+  - [ ]* 16.2 Write property test for deletion
+    - **Property 12: Deletion Removes Job**
+    - **Validates: Requirements 9.2**
+
+- [x] 17. Implement error handling and loading states
+  - [x] 17.1 Create error boundary and toast notifications
+    - Display storage unavailable warning
+    - Display AI extraction errors with retry option
+    - Display loading indicators during AI operations
+    - _Requirements: 1.7, 8.3, 12.3, 12.4_
+
+- [x] 18. Wire up keyboard shortcuts
+  - [x] 18.1 Integrate useKeyboardShortcuts with App
+    - Connect Shift+N to open AddJobModal (when no input focused)
+    - Connect Esc to close modal
+    - Connect Cmd+Enter (Mac) / Ctrl+Enter (Windows) to save job
+    - _Requirements: 11.1, 11.2, 11.3_
+
+- [x] 19. Final Checkpoint - Ensure all tests pass
+  - Ensure all tests pass, ask the user if questions arise.
+
+- [x] 20. Add Application Link Field Support
+  - [x] 20.1 Update TypeScript types to include applicationLink
+    - Add applicationLink field to JobPosting interface in src/types/index.ts
+    - Add applicationLink field to ExtractedJobData interface
+    - Update Zod schema to validate applicationLink field
+    - _Requirements: 1.1, 1.8, 3.2_
+  - [x] 20.2 Update AIService to extract application link
+    - Modify extractJobDetails prompt to extract application link from pasted text
+    - Update Zod validation schema in AIService.ts
+    - Ensure applicationLink is returned in extraction response
+    - _Requirements: 1.1, 1.8_
+  - [x] 20.3 Update AddJobModal to display application link field
+    - Add editable input field for application link in extracted fields section
+    - Display extracted application link value
+    - Allow manual editing of application link before saving
+    - _Requirements: 1.3, 1.8_
+  - [x] 20.4 Update JobDetail component to display application link
+    - Add application link display with clickable link
+    - Show application link alongside LinkedIn URL
+    - Handle null/empty application link gracefully
+    - _Requirements: 6.3_
+  - [x] 20.5 Update ExportService to include application link in CSV
+    - Add "Application Link" column after "LinkedIn URL" in CSV header
+    - Include applicationLink value in CSV data rows
+    - Update column order to match requirements
+    - _Requirements: 7.2_
+  - [ ]* 20.6 Update property tests for application link
+    - Update Property 1 test to verify applicationLink round trip
+    - Update Property 9 test to verify Application Link column in CSV
+    - Update Property 16 test to verify applicationLink in extraction
+    - _Requirements: 1.8, 3.2, 7.2_

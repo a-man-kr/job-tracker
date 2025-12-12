@@ -1,0 +1,145 @@
+# Implementation Plan
+
+- [x] 1. Set up Supabase project and configuration
+  - [x] 1.1 Install Supabase client library and configure environment
+    - Install `@supabase/supabase-js` package
+    - Create `.env.local` entries for `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`
+    - Update `.env.local.template` with Supabase placeholders
+    - _Requirements: 2.1, 6.1_
+  - [x] 1.2 Create Supabase client initialization module
+    - Create `src/lib/supabase.ts` with typed client
+    - Export singleton supabase client instance
+    - _Requirements: 2.1, 6.1_
+  - [x] 1.3 Create database types for Supabase
+    - Create `src/types/supabase.ts` with Database interface
+    - Define Row, Insert, and Update types for job_postings table
+    - _Requirements: 2.5, 2.6_
+
+- [x] 2. Implement data transformation utilities
+  - [x] 2.1 Create job posting transformer functions
+    - Create `src/utils/jobTransformers.ts`
+    - Implement `dbRowToJobPosting()` for deserializing database rows
+    - Implement `jobPostingToDbInsert()` for serializing to database format
+    - Implement `jobUpdatesToDbUpdate()` for partial updates
+    - _Requirements: 2.5, 2.6_
+  - [x] 2.2 Write property test for round-trip consistency
+    - **Property 1: Job Posting Round-Trip Consistency**
+    - **Validates: Requirements 2.5, 2.6**
+
+- [x] 3. Implement Authentication Service
+  - [x] 3.1 Create AuthService with Supabase Auth integration
+    - Create `src/services/AuthService.ts`
+    - Implement `signUp()`, `signIn()`, `signOut()` methods
+    - Implement `getSession()` and `onAuthStateChange()` methods
+    - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5_
+  - [x] 3.2 Create AuthContext for React state management
+    - Create `src/context/AuthContext.tsx`
+    - Implement AuthProvider with session state
+    - Expose auth methods and user state via context
+    - _Requirements: 1.1, 1.2, 1.4_
+  - [x] 3.3 Write unit tests for AuthService
+    - Test sign up flow
+    - Test sign in with valid/invalid credentials
+    - Test sign out
+    - _Requirements: 1.2, 1.3, 1.4_
+
+- [x] 4. Implement Supabase Storage Service
+  - [x] 4.1 Create SupabaseStorageService class
+    - Create `src/services/SupabaseStorageService.ts`
+    - Implement `saveJob()` with user_id association
+    - Implement `getJob()` and `getAllJobs()` with user filtering
+    - Implement `updateJob()` and `deleteJob()`
+    - _Requirements: 2.1, 2.2, 2.3, 2.4, 3.1_
+  - [x] 4.2 Write property test for save-retrieve consistency
+    - **Property 2: Save-Retrieve Consistency**
+    - **Validates: Requirements 2.1, 2.2**
+  - [x] 4.3 Write property test for update persistence
+    - **Property 3: Update Persistence**
+    - **Validates: Requirements 2.3**
+  - [x] 4.4 Write property test for delete removes job
+    - **Property 4: Delete Removes Job**
+    - **Validates: Requirements 2.4**
+  - [x] 4.5 Write property test for user isolation
+    - **Property 5: User Isolation**
+    - **Validates: Requirements 3.1**
+
+- [x] 5. Refactor existing StorageService for async operations
+  - [x] 5.1 Update IStorageService interface to async
+    - Modify `src/services/StorageService.ts` interface methods to return Promises
+    - Update LocalStorageService implementation to be async-compatible
+    - _Requirements: 6.2_
+  - [x] 5.2 Create StorageServiceFactory for backend selection
+    - Create factory function that returns appropriate storage service
+    - Select SupabaseStorageService when authenticated, LocalStorageService otherwise
+    - _Requirements: 6.3_
+  - [x] 5.3 Write property test for storage interface contract
+    - **Property 7: Storage Interface Contract**
+    - **Validates: Requirements 6.2**
+
+- [x] 6. Checkpoint - Ensure all tests pass
+  - Ensure all tests pass, ask the user if questions arise.
+
+- [x] 7. Implement Migration Service
+  - [x] 7.1 Create MigrationService for localStorage to cloud migration
+    - Create `src/services/MigrationService.ts`
+    - Implement `hasLocalData()` to check for existing localStorage jobs
+    - Implement `migrateToCloud()` to transfer jobs to Supabase
+    - Implement `clearLocalData()` to remove localStorage after successful migration
+    - _Requirements: 5.1, 5.2, 5.3, 5.4_
+  - [x] 7.2 Write property test for migration completeness
+    - **Property 6: Migration Completeness**
+    - **Validates: Requirements 5.2**
+
+- [x] 8. Update App Context for async storage
+  - [x] 8.1 Modify AppContext to use async storage operations
+    - Update `src/context/AppContext.tsx` to handle async CRUD
+    - Add loading states for storage operations
+    - Integrate with AuthContext for storage backend selection
+    - _Requirements: 2.1, 2.2, 2.3, 2.4, 6.3_
+
+- [x] 9. Create Authentication UI Components
+  - [x] 9.1 Create SignIn component
+    - Create `src/components/SignIn.tsx`
+    - Implement email/password form with validation
+    - Display error messages for failed authentication
+    - _Requirements: 1.1, 1.2, 1.3_
+  - [x] 9.2 Create SignUp component
+    - Create `src/components/SignUp.tsx`
+    - Implement registration form with email/password
+    - Show verification email sent message
+    - _Requirements: 1.5_
+  - [x] 9.3 Update Header component with auth state
+    - Add user display and sign out button when authenticated
+    - Show sign in link when not authenticated
+    - _Requirements: 1.4_
+
+- [x] 10. Create Migration UI
+  - [x] 10.1 Create MigrationPrompt component
+    - Create `src/components/MigrationPrompt.tsx`
+    - Show prompt when user has localStorage data and signs in
+    - Display migration progress and results
+    - Handle migration errors gracefully
+    - _Requirements: 5.1, 5.2, 5.3, 5.4_
+
+- [x] 11. Implement Error Handling
+  - [x] 11.1 Create error handling utilities
+    - Create `src/utils/errorHandling.ts`
+    - Implement user-friendly error message mapping
+    - Add retry logic for transient failures
+    - _Requirements: 4.1, 4.2, 4.3_
+  - [x] 11.2 Add network status detection
+    - Implement online/offline detection
+    - Show notification when offline
+    - Auto-resume operations when back online
+    - _Requirements: 4.2, 4.3_
+
+- [x] 12. Update App routing and layout
+  - [x] 12.1 Integrate auth flow into App component
+    - Update `src/App.tsx` to wrap with AuthProvider
+    - Show auth UI when not authenticated
+    - Show main app when authenticated
+    - Handle migration prompt on first sign-in
+    - _Requirements: 1.1, 5.1_
+
+- [x] 13. Final Checkpoint - Ensure all tests pass
+  - Ensure all tests pass, ask the user if questions arise.
