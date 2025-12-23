@@ -5,6 +5,7 @@
 
 import { useState, useCallback, useEffect, useRef, useImperativeHandle, forwardRef } from 'react';
 import { extractJobDetails, generateReferralMessage, AIServiceError } from '../services/AIService';
+import { getCurrentAIModel, getModelDisplayName } from '../services/SettingsService';
 import type { JobPosting } from '../types';
 
 /**
@@ -293,9 +294,14 @@ export const AddJobModal = forwardRef<AddJobModalHandle, AddJobModalProps>(funct
 
             {/* Raw text input - Requirements: 1.1 */}
             <div className="space-y-2">
-              <label htmlFor="raw-text" className="block text-sm font-medium text-gray-700">
-                Paste Job Posting Text
-              </label>
+              <div className="flex items-center justify-between">
+                <label htmlFor="raw-text" className="block text-sm font-medium text-gray-700">
+                  Paste Job Posting Text
+                </label>
+                <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                  Using {getModelDisplayName(getCurrentAIModel())}
+                </span>
+              </div>
               <textarea
                 ref={textareaRef}
                 id="raw-text"

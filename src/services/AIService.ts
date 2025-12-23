@@ -5,6 +5,7 @@
  */
 
 import { z } from 'zod';
+import { getCurrentAIModel } from './SettingsService';
 
 // Zod schema for validating AI extraction responses
 export const ExtractedJobDataSchema = z.object({
@@ -58,15 +59,16 @@ function getApiKey(): string {
 
 /**
  * Makes a request to the Gemini API
- * Using gemini-3.0-flash for fast, cost-effective responses
+ * Uses the currently selected model from settings
  */
 async function callGeminiAPI(prompt: string, temperature: number = 0.2): Promise<string> {
   const apiKey = getApiKey();
+  const model = getCurrentAIModel();
   const { controller, timeoutId } = createTimeoutController(REQUEST_TIMEOUT_MS);
 
   try {
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.0-flash:generateContent?key=${apiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
       {
         method: 'POST',
         headers: {

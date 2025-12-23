@@ -15,6 +15,7 @@ export { AddJobModal } from './AddJobModal';
 export type { AddJobModalHandle } from './AddJobModal';
 export { DeleteConfirmation } from './DeleteConfirmation';
 export { ErrorBoundary } from './ErrorBoundary';
+export { SettingsModal } from './SettingsModal';
 export { ToastContainer, generateToastId, type ToastMessage, type ToastType } from './Toast';
 export { StorageWarning } from './StorageWarning';
 export { LoadingSpinner, LoadingOverlay } from './LoadingSpinner';
