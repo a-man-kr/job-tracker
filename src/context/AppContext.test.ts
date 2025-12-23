@@ -18,6 +18,8 @@ function createMockJob(overrides: Partial<JobPosting> = {}): JobPosting {
     description: 'Test description',
     linkedInUrl: null,
     applicationLink: null,
+    applicationRequirements: null,
+    applicationDeadline: null,
     referralMessage: 'Test message',
     referralOutreachStatus: 'Have to Find',
     notes: '',

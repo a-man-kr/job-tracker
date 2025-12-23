@@ -20,6 +20,8 @@ export interface DbJobPostingRow {
   description: string;
   linkedin_url: string | null;
   application_link: string | null;
+  application_requirements: string | null;
+  application_deadline: string | null;
   referral_message: string;
   referral_outreach_status: string;
   notes: string;
@@ -43,6 +45,8 @@ export interface DbJobPostingInsert {
   description: string;
   linkedin_url?: string | null;
   application_link?: string | null;
+  application_requirements?: string | null;
+  application_deadline?: string | null;
   referral_message?: string;
   referral_outreach_status?: string;
   notes?: string;
@@ -63,6 +67,8 @@ export interface DbJobPostingUpdate {
   description?: string;
   linkedin_url?: string | null;
   application_link?: string | null;
+  application_requirements?: string | null;
+  application_deadline?: string | null;
   referral_message?: string;
   referral_outreach_status?: string;
   notes?: string;

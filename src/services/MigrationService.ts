@@ -88,6 +88,8 @@ export async function migrateToCloud(userId: string): Promise<MigrationResult> {
           description: job.description,
           linkedInUrl: job.linkedInUrl,
           applicationLink: job.applicationLink,
+          applicationRequirements: (job as any).applicationRequirements || null,
+          applicationDeadline: (job as any).applicationDeadline || null,
           referralMessage: job.referralMessage,
           referralOutreachStatus: job.referralOutreachStatus,
           notes: job.notes,

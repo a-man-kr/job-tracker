@@ -91,10 +91,32 @@ export function JobCard({ job, isSelected, onClick }: JobCardProps) {
           </span>
         </div>
       </div>
-      {/* Date Added */}
-      <p className="text-xs text-gray-400 mt-2">
-        Added {formatDate(job.dateAdded)}
-      </p>
+      {/* Date Added and Special Indicators */}
+      <div className="flex items-center justify-between mt-2">
+        <p className="text-xs text-gray-400">
+          Added {formatDate(job.dateAdded)}
+        </p>
+        <div className="flex items-center gap-1">
+          {/* Application Requirements Indicator */}
+          {job.applicationRequirements && (
+            <span 
+              className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-orange-100 text-orange-700"
+              title="Has special application requirements"
+            >
+              ⚠️
+            </span>
+          )}
+          {/* Application Deadline Indicator */}
+          {job.applicationDeadline && (
+            <span 
+              className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-red-100 text-red-700"
+              title={`Deadline: ${new Date(job.applicationDeadline).toLocaleDateString()}`}
+            >
+              ⏰
+            </span>
+          )}
+        </div>
+      </div>
     </button>
   );
 }

@@ -49,6 +49,8 @@ const jobPostingDataArb = fc.record({
   description: fc.string({ maxLength: 5000 }),
   linkedInUrl: fc.option(fc.webUrl(), { nil: null }),
   applicationLink: fc.option(fc.webUrl(), { nil: null }),
+  applicationRequirements: fc.option(fc.string({ maxLength: 300 }), { nil: null }),
+  applicationDeadline: fc.option(validIsoDateArb.map(d => d.split('T')[0]), { nil: null }),
   jobId: fc.option(fc.string({ minLength: 1, maxLength: 50 }), { nil: null }),
   referralMessage: fc.string({ maxLength: 2000 }),
   referralOutreachStatus: referralOutreachStatusArb,

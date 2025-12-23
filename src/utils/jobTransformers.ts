@@ -29,6 +29,8 @@ export function dbRowToJobPosting(row: DbJobPostingRow): JobPosting {
     description: row.description,
     linkedInUrl: row.linkedin_url,
     applicationLink: row.application_link,
+    applicationRequirements: row.application_requirements,
+    applicationDeadline: row.application_deadline,
     referralMessage: row.referral_message,
     referralOutreachStatus,
     notes: row.notes,
@@ -58,6 +60,8 @@ export function jobPostingToDbInsert(
     description: job.description,
     linkedin_url: job.linkedInUrl,
     application_link: job.applicationLink,
+    application_requirements: job.applicationRequirements,
+    application_deadline: job.applicationDeadline,
     referral_message: job.referralMessage,
     referral_outreach_status: job.referralOutreachStatus,
     notes: job.notes,
@@ -82,6 +86,8 @@ export function jobUpdatesToDbUpdate(updates: Partial<JobPosting>): DbJobPosting
   if (updates.description !== undefined) dbUpdate.description = updates.description;
   if (updates.linkedInUrl !== undefined) dbUpdate.linkedin_url = updates.linkedInUrl;
   if (updates.applicationLink !== undefined) dbUpdate.application_link = updates.applicationLink;
+  if (updates.applicationRequirements !== undefined) dbUpdate.application_requirements = updates.applicationRequirements;
+  if (updates.applicationDeadline !== undefined) dbUpdate.application_deadline = updates.applicationDeadline;
   if (updates.referralMessage !== undefined) dbUpdate.referral_message = updates.referralMessage;
   if (updates.referralOutreachStatus !== undefined) dbUpdate.referral_outreach_status = updates.referralOutreachStatus;
   if (updates.notes !== undefined) dbUpdate.notes = updates.notes;

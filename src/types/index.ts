@@ -37,6 +37,8 @@ export interface JobPosting {
   description: string;
   linkedInUrl: string | null;
   applicationLink: string | null;
+  applicationRequirements: string | null; // Special instructions like "apply via email to xyz@company.com"
+  applicationDeadline: string | null; // ISO date string for deadline
   referralMessage: string;
   referralOutreachStatus: ReferralOutreachStatus;
   notes: string;

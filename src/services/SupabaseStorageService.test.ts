@@ -52,6 +52,8 @@ const jobPostingInputArb: fc.Arbitrary<Omit<JobPosting, 'id' | 'dateAdded' | 'la
   description: fc.string({ minLength: 1, maxLength: 5000 }),
   linkedInUrl: fc.option(fc.webUrl(), { nil: null }),
   applicationLink: fc.option(fc.webUrl(), { nil: null }),
+  applicationRequirements: fc.option(fc.string({ maxLength: 300 }), { nil: null }),
+  applicationDeadline: fc.option(validDateArb.map(d => d.toISOString().split('T')[0]), { nil: null }),
   referralMessage: fc.string({ maxLength: 2000 }),
   referralOutreachStatus: referralOutreachStatusArb,
   notes: fc.string({ maxLength: 2000 }),

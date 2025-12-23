@@ -29,6 +29,8 @@ interface FormState {
   description: string;
   linkedInUrl: string;
   applicationLink: string;
+  applicationRequirements: string;
+  applicationDeadline: string;
   jobId: string;
   referralMessage: string;
 }
@@ -41,6 +43,8 @@ const initialFormState: FormState = {
   description: '',
   linkedInUrl: '',
   applicationLink: '',
+  applicationRequirements: '',
+  applicationDeadline: '',
   jobId: '',
   referralMessage: '',
 };
@@ -127,6 +131,8 @@ export const AddJobModal = forwardRef<AddJobModalHandle, AddJobModalProps>(funct
         location: extracted.location ?? '',
         description: extracted.description ?? '',
         applicationLink: extracted.applicationLink ?? '',
+        applicationRequirements: extracted.applicationRequirements ?? '',
+        applicationDeadline: extracted.applicationDeadline ?? '',
         jobId: extracted.jobId ?? '',
       }));
       
@@ -202,6 +208,8 @@ export const AddJobModal = forwardRef<AddJobModalHandle, AddJobModalProps>(funct
       description: formState.description.trim(),
       linkedInUrl: formState.linkedInUrl.trim() || null,
       applicationLink: formState.applicationLink.trim() || null,
+      applicationRequirements: formState.applicationRequirements.trim() || null,
+      applicationDeadline: formState.applicationDeadline.trim() || null,
       jobId: formState.jobId.trim() || null,
       referralMessage: formState.referralMessage.trim(),
       referralOutreachStatus: 'Have to Find',
@@ -400,6 +408,41 @@ export const AddJobModal = forwardRef<AddJobModalHandle, AddJobModalProps>(funct
                     value={formState.applicationLink}
                     onChange={(e) => handleFieldChange('applicationLink', e.target.value)}
                     placeholder="https://company.com/careers/apply/..."
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+
+                {/* Application Requirements - Critical Info */}
+                <div className="space-y-1">
+                  <label htmlFor="application-requirements" className="block text-sm font-medium text-gray-700 flex items-center gap-2">
+                    Application Requirements
+                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-orange-100 text-orange-800">
+                      Important
+                    </span>
+                  </label>
+                  <textarea
+                    id="application-requirements"
+                    value={formState.applicationRequirements}
+                    onChange={(e) => handleFieldChange('applicationRequirements', e.target.value)}
+                    placeholder="e.g., Apply via email to siddhi.c1125@minimalix.in with subject line: [Role] - Winter Internship - Your Name"
+                    className="w-full h-20 px-3 py-2 text-sm border border-orange-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-none bg-orange-50"
+                  />
+                  <p className="text-xs text-orange-600">
+                    ⚠️ Capture special application instructions to avoid missing important details
+                  </p>
+                </div>
+
+                {/* Application Deadline */}
+                <div className="space-y-1">
+                  <label htmlFor="application-deadline" className="block text-sm font-medium text-gray-700 flex items-center gap-2">
+                    Application Deadline
+                    <span className="text-gray-400">(optional)</span>
+                  </label>
+                  <input
+                    type="date"
+                    id="application-deadline"
+                    value={formState.applicationDeadline}
+                    onChange={(e) => handleFieldChange('applicationDeadline', e.target.value)}
                     className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>

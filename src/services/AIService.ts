@@ -13,6 +13,8 @@ export const ExtractedJobDataSchema = z.object({
   location: z.string().nullable(),
   description: z.string().nullable(),
   applicationLink: z.string().nullable(),
+  applicationRequirements: z.string().nullable(),
+  applicationDeadline: z.string().nullable(),
   jobId: z.string().nullable(),
 });
 
@@ -56,7 +58,7 @@ function getApiKey(): string {
 
 /**
  * Makes a request to the Gemini API
- * Using gemini-2.0-flash for fast, cost-effective responses
+ * Using gemini-3.0-flash for fast, cost-effective responses
  */
 async function callGeminiAPI(prompt: string, temperature: number = 0.2): Promise<string> {
   const apiKey = getApiKey();
@@ -64,7 +66,7 @@ async function callGeminiAPI(prompt: string, temperature: number = 0.2): Promise
 
   try {
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.0-flash:generateContent?key=${apiKey}`,
       {
         method: 'POST',
         headers: {
@@ -150,6 +152,8 @@ export async function extractJobDetails(rawText: string): Promise<ExtractedJobDa
       location: null,
       description: null,
       applicationLink: null,
+      applicationRequirements: null,
+      applicationDeadline: null,
       jobId: null,
     };
   }
@@ -163,6 +167,8 @@ IMPORTANT RULES:
 - The description should be a summary of the job responsibilities and requirements (max 500 characters)
 - Look for application links (URLs where candidates can apply) - these may be different from LinkedIn URLs
 - Look for job IDs, requisition numbers, or posting IDs (often labeled as "Job ID:", "Req ID:", "Posting ID:", or similar)
+- Pay special attention to application instructions like "Email to:", "Apply via:", "Send resume to:", "Subject line:", etc.
+- Look for deadlines, closing dates, or time-sensitive language
 
 Extract these fields:
 - jobTitle: The job title/position name
@@ -170,6 +176,8 @@ Extract these fields:
 - location: The job location (city, state, country, or "Remote")
 - description: A brief summary of the job
 - applicationLink: The URL where candidates can apply (company career page, application portal, etc.)
+- applicationRequirements: Special application instructions (e.g., "Email resume to xyz@company.com with subject line [Role] - Your Name", "Apply via email only", "Include portfolio link")
+- applicationDeadline: Application deadline date in YYYY-MM-DD format if mentioned
 - jobId: The external job ID, requisition number, or posting ID if present (e.g., "1656147", "REQ-2024-001")
 
 Job posting text:
@@ -182,6 +190,8 @@ Return JSON in this exact format:
   "location": "string or null",
   "description": "string or null",
   "applicationLink": "string or null",
+  "applicationRequirements": "string or null",
+  "applicationDeadline": "string or null",
   "jobId": "string or null"
 }`;
 
@@ -204,6 +214,8 @@ Return JSON in this exact format:
       location: null,
       description: null,
       applicationLink: null,
+      applicationRequirements: null,
+      applicationDeadline: null,
       jobId: null,
     };
   }
