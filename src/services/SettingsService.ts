@@ -2,7 +2,7 @@
  * Settings Service - Manages user preferences and settings
  */
 
-export type GeminiModel = 'gemini-3.0-flash' | 'gemini-2.0-flash' | 'gemini-1.5-flash';
+export type GeminiModel = 'gemini-3.0-flash' | 'gemini-2.5-flash' | 'gemini-2.5-pro' | 'gemini-2.0-flash' | 'gemini-1.5-flash';
 
 export interface AppSettings {
   aiModel: GeminiModel;
@@ -11,7 +11,7 @@ export interface AppSettings {
 const SETTINGS_KEY = 'job-tracker-settings';
 
 const DEFAULT_SETTINGS: AppSettings = {
-  aiModel: 'gemini-3.0-flash',
+  aiModel: 'gemini-2.5-flash',
 };
 
 /**
@@ -73,7 +73,11 @@ export function setAIModel(model: GeminiModel): void {
 export function getModelDisplayName(model: GeminiModel): string {
   switch (model) {
     case 'gemini-3.0-flash':
-      return 'Gemini 3.0 Flash (Latest)';
+      return 'Gemini 3.0 Flash (Experimental)';
+    case 'gemini-2.5-flash':
+      return 'Gemini 2.5 Flash (Recommended)';
+    case 'gemini-2.5-pro':
+      return 'Gemini 2.5 Pro (Most Capable)';
     case 'gemini-2.0-flash':
       return 'Gemini 2.0 Flash';
     case 'gemini-1.5-flash':
@@ -87,5 +91,5 @@ export function getModelDisplayName(model: GeminiModel): string {
  * Get all available models
  */
 export function getAvailableModels(): GeminiModel[] {
-  return ['gemini-3.0-flash', 'gemini-2.0-flash', 'gemini-1.5-flash'];
+  return ['gemini-2.5-flash', 'gemini-2.5-pro', 'gemini-3.0-flash', 'gemini-2.0-flash', 'gemini-1.5-flash'];
 }

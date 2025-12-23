@@ -142,14 +142,26 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                         <span className="text-sm font-medium text-gray-900">
                           {getModelDisplayName(model)}
                         </span>
-                        {model === 'gemini-3.0-flash' && (
+                        {model === 'gemini-2.5-flash' && (
                           <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
                             Recommended
                           </span>
                         )}
+                        {model === 'gemini-2.5-pro' && (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">
+                            Most Capable
+                          </span>
+                        )}
+                        {model === 'gemini-3.0-flash' && (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                            Experimental
+                          </span>
+                        )}
                       </div>
                       <div className="text-xs text-gray-500 mt-1">
-                        {model === 'gemini-3.0-flash' && 'Latest model with improved accuracy and speed'}
+                        {model === 'gemini-2.5-flash' && 'Latest stable model with excellent performance and speed'}
+                        {model === 'gemini-2.5-pro' && 'Most capable model with advanced reasoning, slower but more accurate'}
+                        {model === 'gemini-3.0-flash' && 'Newest experimental model, may have occasional issues'}
                         {model === 'gemini-2.0-flash' && 'Previous generation, reliable performance'}
                         {model === 'gemini-1.5-flash' && 'Older model, may have slower response times'}
                       </div>

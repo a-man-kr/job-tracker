@@ -58,70 +58,108 @@ function getApiKey(): string {
 }
 
 /**
- * Makes a request to the Gemini API
- * Uses the currently selected model from settings
+ * Makes a request to the Gemini API with fallback support
+ * Uses the currently selected model from settings, falls back to 2.5-flash if needed
  */
 async function callGeminiAPI(prompt: string, temperature: number = 0.2): Promise<string> {
   const apiKey = getApiKey();
-  const model = getCurrentAIModel();
+  let model = getCurrentAIModel();
   const { controller, timeoutId } = createTimeoutController(REQUEST_TIMEOUT_MS);
 
-  try {
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          contents: [
-            {
-              parts: [{ text: prompt }],
-            },
-          ],
-          generationConfig: {
-            temperature,
-            maxOutputTokens: 2048,
+  // Try the selected model first, then fallback to 2.5-flash if it fails
+  const modelsToTry = model === 'gemini-2.5-flash' 
+    ? ['gemini-2.5-flash'] 
+    : [model, 'gemini-2.5-flash'];
+
+  let lastError: Error | null = null;
+
+  for (const currentModel of modelsToTry) {
+    try {
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${currentModel}:generateContent?key=${apiKey}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
           },
-        }),
-        signal: controller.signal,
+          body: JSON.stringify({
+            contents: [
+              {
+                parts: [{ text: prompt }],
+              },
+            ],
+            generationConfig: {
+              temperature,
+              maxOutputTokens: 2048,
+            },
+          }),
+          signal: controller.signal,
+        }
+      );
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        const errorText = await response.text().catch(() => 'Unknown error');
+        console.error('Gemini API Error:', {
+          status: response.status,
+          statusText: response.statusText,
+          model: currentModel,
+          errorText
+        });
+        
+        // If this is not the last model to try, continue to next model
+        if (currentModel !== modelsToTry[modelsToTry.length - 1]) {
+          console.warn(`Model ${currentModel} failed, trying fallback...`);
+          continue;
+        }
+        
+        throw new AIServiceError(`API request failed: ${response.status} - ${errorText}`, 'API_ERROR');
       }
-    );
 
-    clearTimeout(timeoutId);
+      const data = await response.json();
+      const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
 
-    if (!response.ok) {
-      const errorText = await response.text().catch(() => 'Unknown error');
-      throw new AIServiceError(`API request failed: ${response.status} - ${errorText}`, 'API_ERROR');
-    }
-
-    const data = await response.json();
-    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-
-    if (!text) {
-      throw new AIServiceError('Invalid response structure from Gemini API', 'INVALID_RESPONSE');
-    }
-
-    return text;
-  } catch (error) {
-    clearTimeout(timeoutId);
-
-    if (error instanceof AIServiceError) {
-      throw error;
-    }
-
-    if (error instanceof Error) {
-      if (error.name === 'AbortError') {
-        throw new AIServiceError('Request timed out after 10 seconds', 'TIMEOUT');
+      if (!text) {
+        throw new AIServiceError('Invalid response structure from Gemini API', 'INVALID_RESPONSE');
       }
-      if (error.message.includes('fetch') || error.message.includes('network')) {
-        throw new AIServiceError(`Network error: ${error.message}`, 'NETWORK_ERROR');
-      }
-    }
 
-    throw new AIServiceError(`Unexpected error: ${error}`, 'NETWORK_ERROR');
+      // Log successful model if we had to fallback
+      if (currentModel !== model) {
+        console.info(`Successfully used fallback model: ${currentModel}`);
+      }
+
+      return text;
+    } catch (error) {
+      lastError = error as Error;
+      
+      // If this is not the last model to try, continue to next model
+      if (currentModel !== modelsToTry[modelsToTry.length - 1]) {
+        console.warn(`Model ${currentModel} failed, trying fallback...`, error);
+        continue;
+      }
+      
+      // This was the last model, so throw the error
+      break;
+    }
   }
+
+  clearTimeout(timeoutId);
+
+  if (lastError instanceof AIServiceError) {
+    throw lastError;
+  }
+
+  if (lastError instanceof Error) {
+    if (lastError.name === 'AbortError') {
+      throw new AIServiceError('Request timed out after 10 seconds', 'TIMEOUT');
+    }
+    if (lastError.message.includes('fetch') || lastError.message.includes('network')) {
+      throw new AIServiceError(`Network error: ${lastError.message}`, 'NETWORK_ERROR');
+    }
+  }
+
+  throw new AIServiceError(`Unexpected error: ${lastError}`, 'NETWORK_ERROR');
 }
 
 /**
