@@ -286,7 +286,7 @@ export async function generateReferralMessage(
 
   const resumeContext = getResumeContext();
   
-  let prompt = `You are helping write a referral request message. Generate a casual, human-like message that sounds like a real person reaching out - NOT a corporate template.
+  let prompt = `You are helping write a professional yet personalized referral request message for LinkedIn/email outreach.
 
 CANDIDATE RESUME/PROFILE:
 ${resumeContext}
@@ -295,31 +295,51 @@ TARGET ROLE:
 - Job Title: ${jobTitle}
 - Company: ${company}
 
-STYLE GUIDELINES (VERY IMPORTANT):
-- Sound like a real college student, not a robot or corporate recruiter
-- Keep it SHORT - 3-5 sentences max, one small paragraph
-- Start with a casual greeting like "Hi [Name]," or "Hey [Name],"
-- Briefly introduce yourself
-- Mention ONE relevant thing from the background that fits the role
-- Ask directly for referral or connection - be straightforward
-- End with a simple thanks, nothing fancy
-- NO bullet points, NO formal language like "I am writing to express my interest"
-- Use contractions (I'm, I've, would've, etc.)
-- Sound genuine and humble, not boastful
+MESSAGE STRUCTURE (FOLLOW THIS EXACTLY):
 
-EXAMPLE MESSAGES (match this tone):
+1. GREETING: Start with "Hi [Name]," followed by a brief congratulatory note or acknowledgment if relevant (e.g., "Congrats on [role]!" or "Hope you're doing well!")
 
-Example 1:
+2. INTRODUCTION: One line introducing yourself - name, year, college/university, degree.
+   Example: "I'm Aman, 4th-year BS-MS Economics at IIT Roorkee."
+
+3. CONTEXT: Mention you've applied for the specific role and why you're reaching out.
+   Example: "I've applied for [Company]'s [Role] program and wanted to reach out given your experience at the firm."
+
+4. QUICK BACKGROUND: 2-3 sentences highlighting your MOST RELEVANT accomplishments with SPECIFIC numbers and details. Pick experiences that directly relate to the target role.
+   - Use concrete metrics (e.g., "processed 800+ deals", "built models for $X investments")
+   - Mention relevant certifications (CFA, CPA, etc.)
+   - Keep it punchy and impressive
+
+5. THE ASK: Clear, two-part ask:
+   - First ask for advice/insights about what the company looks for
+   - Then mention referral as secondary ("or if you're comfortable, a referral would be incredibly helpful")
+
+6. CLOSING: Offer to share resume, thank them for considering.
+   Example: "Happy to share my resume if useful. Thanks for considering,
+   [Your Name]"
+
+STYLE GUIDELINES:
+- Professional but warm, not stiff or robotic
+- Use contractions naturally (I'm, I've, I'd)
+- NO bullet points in the message
+- Keep paragraphs short and scannable
+- Total length: 100-150 words
+- Sound confident but not arrogant
+- Be specific about your accomplishments, not vague
+
+EXAMPLE MESSAGE (match this format and tone):
+
 "Hi [Name],
-Aman here - 4th year Economics at IITR. Hope you're doing well!
-I just came across that [Company] is hiring for [Role]. I wanted to reach out and ask if you know whether they also consider interns for similar roles?
-I recently gave CFA Level 1 (August) and am preparing for Level 2. Really keen on breaking into the investment industry and would appreciate any insights you might have.
-Thanks for any help - would mean a lot!"
 
-Example 2:
-"Hi [Name],
-Hope you're doing well! I saw [Company] is hiring for [Role]. I'm Aman, 4th year at IIT Roorkee—cleared CFA L1 and writing L2 in May. I've worked at a family office analyzing deals and building valuation models. This role sounds like exactly what I'm looking for. Would mean a lot if you could refer me or connect me with someone on the team.
-Thanks so much!
+Congrats on VP! I'm Aman, 4th-year BS-MS Economics at IIT Roorkee.
+
+I've applied for Goldman's Summer Analyst program in Asset Management / Sales & Trading and wanted to reach out given your experience at the firm.
+
+Quick background: At a family office, I built an invoice discounting system that processed 800+ deals across sectors (PO financing, supply chain, SaaS). Also created credit risk models, IRR calculators, and financial tools for PE investments. Recently cleared CFA L1, appearing for L2 in May.
+
+I'd really appreciate any advice you have on what Goldman looks for in candidates, or if you're comfortable, a referral would be incredibly helpful.
+
+Happy to share my resume if useful. Thanks for considering,
 Aman"`;
 
   // Add custom instructions if provided
@@ -332,13 +352,18 @@ ${customPrompt}`;
 
   prompt += `
 
-NOW GENERATE a similar message for the ${jobTitle} role at ${company}. Pick the most relevant experience point from the resume that matches this role. Keep it natural and conversational.
+NOW GENERATE a message for the ${jobTitle} role at ${company}. 
+- Pick the 2-3 MOST RELEVANT accomplishments from the resume that match this specific role
+- Include specific numbers and metrics where available
+- Follow the exact structure shown above
+- Use [Name] as placeholder for recipient name
+- Sign off with the candidate's first name from the resume
 
-Return ONLY the message text, nothing else. Use [Name] as placeholder for recipient name.`;
+Return ONLY the message text, nothing else.`;
 
   try {
-    // Use higher temperature for more natural, varied messages
-    const message = await callGeminiAPI(prompt, 0.7);
+    // Use moderate temperature for natural but consistent messages
+    const message = await callGeminiAPI(prompt, 0.5);
     return message.trim();
   } catch (error) {
     if (error instanceof AIServiceError) {
